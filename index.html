@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRE Words Shuffle</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #word-container {
+            font-size: 30px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #result-textarea {
+            text-align: center;
+            width: 70%;
+            height: 100px;
+            margin-bottom: 10px;
+            resize:vertical;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 22px;
+            min-height: 60px;
+            overflow-y: auto;
+        word-wrap:break-word
+            
+        }
+
+        button {
+            display: flex;
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            background-color: #4caf50;
+            color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+        @media screen and (min-width: 480px) {
+            #result-textarea{
+                 font-size: 15px;
+            }
+        }
+        @media screen and (min-width: 720px) {
+            #result-textarea{
+                 font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: #4caf50; margin-bottom: 50px; font-size: 60px; text-align: center;" >SHUFFLE GRE WORDS</h1>
+
+<div id="word-container">Word Display Area</div>
+<textarea id="result-textarea" readonly></textarea>
+<br>
+<button onclick="shuffleWord()">Shuffle Word</button>
+<button onclick="displayMeaning()">Display Meaning</button>
+<button onclick="displayExample()">Display Example</button>
+<button onclick="displaySynonyms()">Display Synonyms</button>
+
+<script>
+    let wordMeaningPairs;
+    let exampleDataset;
+    let synonymsDataset;
+    let currentWordIndex = 0;
+
+    // Fetch the datasets asynchronously
+    async function fetchDatasets() {
+        const responseMeaning = await fetch('wordMeaningPairs.json');
+        wordMeaningPairs = await responseMeaning.json();
+
+        const responseExample = await fetch('exampleDataset.json');
+        exampleDataset = await responseExample.json();
+
+        const responseSynonyms = await fetch('synonymsDataset.json');
+        synonymsDataset = await responseSynonyms.json();
+
+        displayCurrentWord();
+    }
+
+    function shuffleWord() {
+        // Shuffle the order of words
+        currentWordIndex = Math.floor(Math.random() * wordMeaningPairs.length);
+        displayCurrentWord();
+        clearResultTextarea();
+    }
+
+    function displayMeaning() {
+        // Display the meaning of the current word
+        const currentWord = wordMeaningPairs[currentWordIndex].word;
+        const currentMeaning = wordMeaningPairs[currentWordIndex].meaning;
+        updateResultTextarea(`Meaning of "${currentWord}": ${currentMeaning}`);
+    }
+
+    function displayExample() {
+        // Display an example sentence for the current word
+        const currentWord = exampleDataset[currentWordIndex].word;
+        const currentExample = exampleDataset[currentWordIndex].example;
+        updateResultTextarea(`Example for "${currentWord}": ${currentExample}`);
+    }
+
+    function displaySynonyms() {
+        // Display synonyms for the current word
+        const currentWord = synonymsDataset[currentWordIndex].word;
+        const currentSynonyms = synonymsDataset[currentWordIndex].synonyms.join(', ');
+        updateResultTextarea(`Synonyms for "${currentWord}": ${currentSynonyms}`);
+    }
+
+    function displayCurrentWord() {
+        // Display the current word in the word container
+        const currentWord = wordMeaningPairs[currentWordIndex].word;
+        document.getElementById("word-container").textContent = currentWord;
+    }
+
+    function updateResultTextarea(message) {
+        // Update the result textarea with the provided message
+        document.getElementById("result-textarea").value = message;
+    }
+
+    function clearResultTextarea() {
+        // Clear the result textarea
+        document.getElementById("result-textarea").value = "";
+    }
+
+    // Load the datasets when the page loads
+    fetchDatasets();
+</script>
+
+</body>
+</html>
